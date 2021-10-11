@@ -4,7 +4,7 @@ name: java-webapp-gha
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ gha ]
+    branches: [ feature/xray ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -24,7 +24,7 @@ jobs:
       JAVA_DIST: zulu
       MVN_VERSION: 3.8.2
       # required by JFrog CLI
-      M2_HOME: /opt/hostedtoolcache/maven/3.8.2/x64
+      M2_HOME: /opt/hostedtoolcache/maven/3.8.2/x64 # NOT required in JFrog CLI v2.3.0
       MVN_REPO: urs-mvn
       PROMOTE_REPO: urs-mvn-rc-local
     steps:
@@ -32,8 +32,8 @@ jobs:
 
       - name: Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v1.2.0
-#        with:
-#          version: 2.1.1
+        with:
+          version: 2.4.1
     
       - name: Setup Java JDK ${{ env.JAVA_DIST }} ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v2.3.0
@@ -63,12 +63,24 @@ jobs:
                   --repo-deploy-releases=${{ env.MVN_REPO }} \
                   --repo-deploy-snapshots=${{ env.MVN_REPO }}
 
+      - name: Scan dependencies
+        run: jfrog xr am 
+
       - name: Build webapp
-        run: jfrog rt mvn -f src/ clean package
-#        run: jfrog rt mvn -f src/ clean package -Dartifactory.publish.artifacts=false
+        run: jfrog rt mvn -f src/ clean package -Dartifactory.publish.artifacts=false 
         
-#      - name: Audit build 
-#        run: cd src && jfrog xr am
+#      - name: Audit generated artifacts 
+#        run:  jfrog xr s "src/application/target"
+
+      - name: Upload generated artifact
+        run: |
+          # Extract mvn coordinates from pom.xml
+          groupId=$(mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout -f application/pom.xml)
+          artifactId=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout -f application/pom.xml)
+          appVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout -f application/pom.xml)
+          
+          # Upload
+          jfrog rt u application/target/*.jar ${{ env.MVN_REPO }}/$groupId/$artifactId/$appVersion/
 
       - name: Publish Build Info
         run: |
@@ -115,11 +127,16 @@ jobs:
           username: ${{ env.DOCKER_USER }}
           password: ${{ secrets.RT_SECRET }}
 
-      - name: Build Docker images
+      - name: Build Docker image
         uses: docker/build-push-action@v2.6.1
         with:
           context: src/
           tags: ${{ env.DOCKER_REG }}/${{ env.DOCKER_REPO }}/gha-java-webapp:${{ env.APP_VERSION }}
+
+      - name: Scan Docker image
+        run: |
+          docker save -o my-image.tar ${{ env.DOCKER_REG }}/${{ env.DOCKER_REPO }}/gha-java-webapp:${{ env.APP_VERSION }}  
+          jfrog xr s my-image.tar
 
       - name: Push Docker image
         run: jfrog rt dp ${{ env.DOCKER_REG }}/${{ env.DOCKER_REPO }}/gha-java-webapp:${{ env.APP_VERSION }} ${{ env.DOCKER_REPO }} --build-name=docker-$JFROG_CLI_BUILD_NAME --build-number=$JFROG_CLI_BUILD_NUMBER
