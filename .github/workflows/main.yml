@@ -64,7 +64,7 @@ jobs:
                   --repo-deploy-snapshots=${{ env.MVN_REPO }}
 
       - name: Scan dependencies
-        run: jfrog xr am 
+        run: cd src && jfrog xr am 
 
       - name: Build webapp and scan generated artifact before upload
         run: jfrog rt mvn -f src/ clean package --scan=true
