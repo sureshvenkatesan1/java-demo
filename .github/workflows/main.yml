@@ -31,7 +31,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Setup JFrog CLI
-        uses: jfrog/setup-jfrog-cli@v1.2.0
+        uses: jfrog/setup-jfrog-cli@v2.0.0  
         with:
           version: 2.4.1
     
@@ -66,21 +66,21 @@ jobs:
       - name: Scan dependencies
         run: jfrog xr am 
 
-      - name: Build webapp
-        run: jfrog rt mvn -f src/ clean package -Dartifactory.publish.artifacts=false 
+      - name: Build webapp and scan generated artifact before upload
+        run: jfrog rt mvn -f src/ clean package --scan=true
         
 #      - name: Audit generated artifacts 
 #        run:  jfrog xr s "src/application/target"
 
-      - name: Upload generated artifact
-        run: |
-          # Extract mvn coordinates from pom.xml
-          groupId=$(mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout -f application/pom.xml)
-          artifactId=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout -f application/pom.xml)
-          appVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout -f application/pom.xml)
+      # - name: Upload generated artifact
+      #   run: |
+      #     # Extract mvn coordinates from pom.xml
+      #     groupId=$(mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout -f application/pom.xml)
+      #     artifactId=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout -f application/pom.xml)
+      #     appVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout -f application/pom.xml)
           
-          # Upload
-          jfrog rt u application/target/*.jar ${{ env.MVN_REPO }}/$groupId/$artifactId/$appVersion/
+      #     # Upload
+      #     jfrog rt u application/target/*.jar ${{ env.MVN_REPO }}/$groupId/$artifactId/$appVersion/
 
       - name: Publish Build Info
         run: |
@@ -110,7 +110,9 @@ jobs:
 
       - name: Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v1.2.0  
-
+        with:
+          version: 2.4.1
+          
       - name: Download webapp
         run: |
           jfrog rt download \
