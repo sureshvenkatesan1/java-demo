@@ -13,13 +13,11 @@ env:
   JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_SECRET_1 }}
   APP_VERSION: 2.0.0
   MVN_REPO: urs-mvn
-  ENBLE_MVN_PIPELINE: true
-  ENABLE_DOCKER_PIPELINE: false
    
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   build_webapp:
-    if: ${{ env.ENABLE_MVN_PIPELINE }}
+    if: ${{ true }}
     runs-on: ubuntu-latest
     env:
       JFROG_BUILD_STATUS: PASS
@@ -88,7 +86,7 @@ jobs:
       #   run: jfrog rt bpr   --status "XRAY_SCAN_OK" --comment "promoted to the next level" ${{ env.PROMOTE_REPO }}
   
   build_docker:
-    if: ${{ env.ENABLE_DOCKER_PIPELINE }}
+    if: ${{ false }}
     needs: build_webapp
     runs-on: ubuntu-latest
     env:
