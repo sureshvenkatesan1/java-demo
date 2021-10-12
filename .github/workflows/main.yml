@@ -68,7 +68,7 @@ jobs:
         run: cd src && jfrog xr am 
 
       - name: Build webapp and scan generated artifact before upload
-        run: jfrog rt mvn -f src/ clean package --no-transfer-progress  --scan=true
+        run: jfrog rt mvn -f src/ clean install --no-transfer-progress  --scan=true
         
       - name: Publish Build Info
         run: |
