@@ -94,8 +94,8 @@ jobs:
       - name: Scan Build 
         run: jfrog rt bs --fail=false
 
-      - name: Promote Build 
-        run: jfrog rt bpr   --status "XRAY_SCAN_OK" --comment "promoted to the next level" ${{ env.PROMOTE_REPO }}
+      # - name: Promote Build 
+      #   run: jfrog rt bpr   --status "XRAY_SCAN_OK" --comment "promoted to the next level" ${{ env.PROMOTE_REPO }}
   
   build_docker:
     needs: build_webapp
