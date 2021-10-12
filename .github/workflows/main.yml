@@ -67,21 +67,8 @@ jobs:
         run: cd src && jfrog xr am 
 
       - name: Build webapp and scan generated artifact before upload
-        run: jfrog rt mvn -f src/ clean package --no-transfer-progress --scan=true
+        run: jfrog rt mvn -f src/ clean package --no-transfer-progress  --scan=false
         
-#      - name: Audit generated artifacts 
-#        run:  jfrog xr s "src/application/target"
-
-      # - name: Upload generated artifact
-      #   run: |
-      #     # Extract mvn coordinates from pom.xml
-      #     groupId=$(mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout -f application/pom.xml)
-      #     artifactId=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout -f application/pom.xml)
-      #     appVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout -f application/pom.xml)
-          
-      #     # Upload
-      #     jfrog rt u application/target/*.jar ${{ env.MVN_REPO }}/$groupId/$artifactId/$appVersion/
-
       - name: Publish Build Info
         run: |
           # Collect environment variables for the build
@@ -120,6 +107,7 @@ jobs:
             --exclusions "*.pom;*library*" \
             --flat=true \
             --build-name=docker-$JFROG_CLI_BUILD_NAME --build-number=$JFROG_CLI_BUILD_NUMBER \
+            --fail-no-op=true
             ${{ env.MVN_REPO }} src/multi-module-application.jar
 
       - name: Docker Login
