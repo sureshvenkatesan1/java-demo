@@ -23,12 +23,13 @@ jobs:
         appVersion=`sed -n "s/[[:space:]]*<version>\(.*\)<\/version>/\1/p" src/pom.xml`
         echo "##vso[task.setvariable variable=appversion;isOutput=true]$appVersion"
     name: getVersion
-  - task: JfrogCli@1
-    inputs:
-      artifactoryService: 'yann_swampup'
-      useCustomVersion: true
-      cliVersion: '2.8'
-      command: 'jfrog --version'
+# wait for the JFrog extension to support JFrog CLI v2
+#  - task: JfrogCli@1
+#    inputs:
+#      artifactoryService: 'yann_swampup'
+#      useCustomVersion: true
+#      cliVersion: '2.8'
+#      command: 'jfrog --version'
   - task: ArtifactoryMaven@2
     inputs:
       mavenPomFile: 'src/pom.xml'
