@@ -17,16 +17,8 @@ pool:
 jobs:
 - job: java_webapp
   steps:
-  - task: JfrogCli@1
-    inputs:
-      artifactoryService: 'sivasjpd'
-      command: 'jfrog rt --version'
-  - task: CmdLine@2
-    inputs:
-      script: |
-        appVersion=`sed -n "s/[[:space:]]*<version>\(.*\)<\/version>/\1/p" src/pom.xml`
-        echo "##vso[task.setvariable variable=appversion;isOutput=true]$appVersion"
-    name: getVersion
+
+
 
   - task: ArtifactoryMaven@2
     inputs:
