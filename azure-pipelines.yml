@@ -20,8 +20,6 @@ jobs:
   - task: JfrogCli@1
     inputs:
       artifactoryService: 'sivasjpd'
-      useCustomVersion: true
-      cliVersion: '2.8'
       command: 'jfrog --version'
   - task: CmdLine@2
     inputs:
