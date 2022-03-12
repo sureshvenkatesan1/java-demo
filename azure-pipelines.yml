@@ -3,7 +3,7 @@ variables:
   APP_NAME: blue
   MVN_REPO: urs-mvn
   MVN_REPO_PROMOTION: urs-mvn-rc-local
-  DOCKER_REG: yann-swampup.dev.aws.devopsacc.team
+  DOCKER_REG: sivasjpd.jfrog.io
   DOCKER_REPO: urs-docker
   BUILD_INFO_WEBAPP: $(Build.DefinitionName)-ado
   BUILD_INFO_DOCKER: docker-$(Build.DefinitionName)-ado
