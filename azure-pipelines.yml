@@ -20,7 +20,7 @@ jobs:
   - task: JfrogCli@1
     inputs:
       artifactoryService: 'sivasjpd'
-      command: 'jfrog --version'
+      command: 'jfrog rt --version'
   - task: CmdLine@2
     inputs:
       script: |
