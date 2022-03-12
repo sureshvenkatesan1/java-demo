@@ -1,7 +1,7 @@
 
 variables:
   APP_NAME: blue
-  MVN_REPO: urs-mvn
+  MVN_REPO: sv-mvn-release-remote
   MVN_REPO_PROMOTION: urs-mvn-rc-local
   DOCKER_REG: sivasjpd.jfrog.io
   DOCKER_REPO: urs-docker-dev-local
