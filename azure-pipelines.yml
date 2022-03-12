@@ -1,7 +1,8 @@
 
 variables:
   APP_NAME: blue
-  MVN_REPO: sv-mvn-release-remote
+  MVN_REMOTE_REPO: sv-mvn-release-remote
+  MVN_LOCAL_REPO: urs-mvn
   MVN_REPO_PROMOTION: urs-mvn-rc-local
   DOCKER_REG: sivasjpd.jfrog.io
   DOCKER_REPO: urs-docker-dev-local
@@ -25,11 +26,11 @@ jobs:
       mavenPomFile: 'src/pom.xml'
       goals: 'clean package'
       artifactoryResolverService: 'sivasjpd'
-      targetResolveReleaseRepo: $(MVN_REPO)
-      targetResolveSnapshotRepo: $(MVN_REPO)
+      targetResolveReleaseRepo: $(MVN_REMOTE_REPO)
+      targetResolveSnapshotRepo: $(MVN_REMOTE_REPO)
       artifactoryDeployService: 'sivasjpd'
-      targetDeployReleaseRepo: $(MVN_REPO)
-      targetDeploySnapshotRepo: $(MVN_REPO)
+      targetDeployReleaseRepo: $(MVN_LOCAL_REPO)
+      targetDeploySnapshotRepo: $(MVN_LOCAL_REPO)
       collectBuildInfo: true
       buildName: '$(BUILD_INFO_WEBAPP)'
       buildNumber: '$(Build.BuildNumber)'
@@ -60,7 +61,7 @@ jobs:
         {
           "files": [
             {
-              "pattern": "$(MVN_REPO)/",
+              "pattern": "$(MVN_LOCAL_REPO)/",
               "build" : "$(BUILD_INFO_WEBAPP)/$(Build.BuildNumber)",
               "exclusions" : ["*.pom","*library*"]
             }
@@ -106,7 +107,7 @@ jobs:
         {
           "files": [
             {
-              "pattern" : "$(MVN_REPO)/",
+              "pattern" : "$(MVN_LOCAL_REPO)/",
               "props"   : "app.name=$(APP_NAME);app.version=$(AppVersion)",
               "target"  : "src/multi-module-application.jar",
               "flat"    : "true"
